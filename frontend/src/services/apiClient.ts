@@ -28,12 +28,11 @@ class ApiClient {
         credentials: 'include',
       });
     } catch (networkError: any) {
-      // Network error — backend is probably not running or unreachable
+      // Network error — backend is unreachable or sleeping
       const msg = networkError?.message || 'Network error';
       if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
         throw new Error(
-          'Cannot reach the server. Please make sure the backend is running on port 8000. ' +
-          'Run start-backend.ps1 in a separate terminal, then try again.'
+          'Cannot reach the backend server. The free Render backend may be waking up from sleep (can take 30-40 seconds on first request). Please wait a moment and try again.'
         );
       }
       throw new Error(`Network error: ${msg}`);

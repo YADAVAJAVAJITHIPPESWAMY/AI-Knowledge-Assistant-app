@@ -41,11 +41,14 @@ app = FastAPI(
 )
 
 # CORS Middleware configuration
-# Allows localhost / 127.0.0.1 on any port in development with full credential support
+# Clean origins: exclude wildcard "*" so Starlette never returns a wildcard with allow_credentials=True.
+# allow_origin_regex dynamically echoes back the exact requesting origin (Netlify, localhost, etc.)
+_cleaned_origins = [o for o in settings.cors_origins if o and o != "*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$" if not settings.is_production else None,
+    allow_origins=_cleaned_origins,
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
